@@ -2,8 +2,11 @@ const queries = require('../queries/userQueries');
 
 exports.createUser = async (req, res) => {
   try {
-    const { username, email, password } = req.body;
-    const newUser = await queries.createUser({ username, email, password });
+    const { email, age, pseudo, password } = req.body;
+    if(!email || !age || !pseudo || !password) {
+      return res.status(400).json({ error: 'Missing required fields' });
+    }
+    const newUser = await queries.createUser({ email, age, pseudo, password });
     return res.status(201).json(newUser);
   } catch (error) {
     console.error('Error creating user:', error);
