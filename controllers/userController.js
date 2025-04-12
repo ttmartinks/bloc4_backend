@@ -6,12 +6,10 @@ exports.createUser = async (req, res) => {
     if(!email || !age || !pseudo || !password) {
       return res.status(400).json({ error: 'Missing required fields' });
     }
-
     email_user = email.trim();
     age_user = age.trim(); 
     pseudo_user = pseudo.trim();
     password_user = password.trim();
-    
     const newUser = await queries.createUser({ email_user, age_user, pseudo_user, password_user });
     return res.status(201).json(newUser);
   } catch (error) {

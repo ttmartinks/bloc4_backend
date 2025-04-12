@@ -24,6 +24,7 @@ const Users = sequelize.define('Users', {
   },
   id_role: {
     type: DataTypes.INTEGER,
+    defaultValue: 1,
   },
   is_activ: {
     type: DataTypes.BOOLEAN,
