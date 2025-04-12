@@ -8,9 +8,9 @@ module.exports = (app) => {
 
   app.use('/api/user', userRoutes);
 
-  app.use('/api/ressource', ressourceRoutes);
+  //app.use('/api/ressource', ressourceRoutes);
 
-  app.use('/api/exercise', exerciseRoutes);
+  //app.use('/api/exercise', exerciseRoutes);
 
   app.use('/api', testRoutes);
 
