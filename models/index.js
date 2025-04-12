@@ -7,6 +7,7 @@ const BreathingExercises = require('./BreathingExercisesModel');
 const HistoricExercises = require('./HistoricExercisesModel');
 
 // Définir les relations entre les modèles si nécessaire
+/*
 Users.belongsTo(Roles, { foreignKey: 'id_role' });
 Resources.belongsTo(Users, { foreignKey: 'id_creator' });
 UsersFavorites.belongsTo(Users, { foreignKey: 'id_user' });
@@ -16,6 +17,7 @@ Exercises.belongsTo(Users, { foreignKey: 'id_creator' });
 BreathingExercises.belongsTo(Exercises, { foreignKey: 'id_exercise' });
 HistoricExercises.belongsTo(Users, { foreignKey: 'id_user' });
 HistoricExercises.belongsTo(Exercises, { foreignKey: 'id_exercise' });
+*/
 
 module.exports = {
   Users,
