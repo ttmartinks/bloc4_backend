@@ -26,7 +26,7 @@ exports.loginUser = async (req, res) => {
         password_user = hashPassword(password_user);
       }
 
-      if (!verifyPassword(hashedPasswordInput, user.password_user)) {
+      if (!verifyPassword(password_user, user.password_user)) {
         return res.status(401).json({ error: 'Invalid password' });
       }
   
@@ -42,14 +42,20 @@ exports.loginUser = async (req, res) => {
 
 exports.createUser = async (req, res) => {
   try {
-    const { email, age, pseudo, password } = req.body;
-    if(!email || !age || !pseudo || !password) {
+    if(!req.body) {
+      return res.status(400).json({ error: 'Missing request body' });
+    }
+    if(!req.body.email || !req.body.age || !req.body.pseudo || !req.body.password) {
       return res.status(400).json({ error: 'Missing required fields' });
     }
-    email_user = email.trim();
-    age_user = age.trim(); 
-    pseudo_user = pseudo.trim();
-    password_user = password.trim();
+    const email_user = email.trim();
+    const age_user = age.trim(); 
+    const pseudo_user = pseudo.trim();
+    let password_user = password.trim();
+    if (!isSha256(password_user)) {
+      // Si ce n'est pas un hash SHA-256, on le hache
+      password_user = hashPassword(password_user);
+    }
     const newUser = await queries.createUser({ email_user, age_user, pseudo_user, password_user });
     return res.status(201).json(newUser);
   } catch (error) {
