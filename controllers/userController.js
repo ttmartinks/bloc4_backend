@@ -6,6 +6,9 @@ const { hashPassword, verifyPassword } = require('../utils/password');
 
 exports.loginUser = async (req, res) => {
     try {
+    if(!req.body) {
+        return res.status(400).json({ error: 'Missing request body' });
+    }
     if(!req.body.email || !req.body.password) {
         return res.status(400).json({ error: 'Missing required fields' });
     }
@@ -43,7 +46,7 @@ exports.createUser = async (req, res) => {
     email_user = email.trim();
     age_user = age.trim(); 
     pseudo_user = pseudo.trim();
-    password_user = await password.trim();
+    password_user = password.trim();
     const newUser = await queries.createUser({ email_user, age_user, pseudo_user, password_user });
     return res.status(201).json(newUser);
   } catch (error) {
