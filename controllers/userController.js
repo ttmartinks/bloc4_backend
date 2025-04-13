@@ -13,7 +13,7 @@ exports.loginUser = async (req, res) => {
         return res.status(400).json({ error: 'Missing required fields' });
     }
     const email_user = req.body.email.trim();
-    const password_user = req.body.password.trim();
+    let password_user = req.body.password.trim();
 
       const user = await queries.getUserByEmail(email_user);
       console.log('User found:', user);
