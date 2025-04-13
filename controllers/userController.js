@@ -48,10 +48,10 @@ exports.createUser = async (req, res) => {
     if(!req.body.email || !req.body.age || !req.body.pseudo || !req.body.password) {
       return res.status(400).json({ error: 'Missing required fields' });
     }
-    const email_user = email.trim();
-    const age_user = age.trim(); 
-    const pseudo_user = pseudo.trim();
-    let password_user = password.trim();
+    const email_user = req.body.email.trim();
+    const age_user = req.body.age.trim(); 
+    const pseudo_user = req.body.pseudo.trim();
+    let password_user = req.body.password.trim();
     if (!isSha256(password_user)) {
       // Si ce n'est pas un hash SHA-256, on le hache
       password_user = hashPassword(password_user);
