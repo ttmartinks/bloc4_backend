@@ -1,7 +1,7 @@
 const queries = require('../queries/userQueries');
 
 const { generateToken, verifyToken } = require('../utils/jwt'); 
-const { hashPassword, verifyPassword } = require('../utils/password');
+const { hashPassword, verifyPassword, isSha256 } = require('../utils/password');
 
 
 exports.loginUser = async (req, res) => {
@@ -18,11 +18,14 @@ exports.loginUser = async (req, res) => {
       const user = await queries.getUserByEmail(email_user);
       console.log('User found:', user);
       if (!user) {
-        return res.status(404).json({ error: 'User not found' });
+        return res.status(404).json({ error: 'Email not found' });
       }
-  
-      // Vérifier le mot de passe
-      const hashedPasswordInput = hashPassword(password);
+
+      if (!isSha256(password_user)) {
+        // Si ce n'est pas un hash SHA-256, on le hache
+        password_user = hashPassword(password_user);
+      }
+
       if (!verifyPassword(hashedPasswordInput, user.password_user)) {
         return res.status(401).json({ error: 'Invalid password' });
       }

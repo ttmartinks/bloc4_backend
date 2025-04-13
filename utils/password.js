@@ -15,6 +15,12 @@ const hashPassword = (password) => {
 // Méthode pour vérifier un mot de passe hashé avec le mot de passe hashé en bdd
 const verifyPassword = (hashedPasswordInput, hashedPasswordStored) => {
     return hashedPasswordInput === hashedPasswordStored;
-  };
+};
 
-module.exports = { hashPassword, verifyPassword };
+// Méthode pour vérifier si le mot de passe est de format SHA-256 (mais ne garantit pas qu'il soit valide)
+const isSha256 = (password) => {
+    const regex = /^[a-f0-9]{64}$/;
+    return regex.test(password);
+};
+
+module.exports = { hashPassword, verifyPassword, isSha256 };
