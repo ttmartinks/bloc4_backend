@@ -4,6 +4,7 @@ const userController = require('../controllers/userController');
 
 // Définition des routes en utilisant les fonctions du contrôleur
 router.post('/', userController.createUser);
+router.post('/login', userController.loginUser);
 router.get('/', userController.getAllUsers);
 router.get('/:id', userController.getUserById);
 router.put('/:id', userController.updateUser);
