@@ -1,6 +1,8 @@
 const queries = require('../queries/userQueries');
 
-const { generateToken, verifyToken } = require('./jwt'); 
+const { generateToken, verifyToken } = require('../utils/jwt'); 
+const { hashPassword, verifyPassword } = require('../utils/password');
+
 
 exports.loginUser = async (req, res) => {
     try {
