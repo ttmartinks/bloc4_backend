@@ -29,11 +29,11 @@ exports.loginUser = async (req, res) => {
       if (!verifyPassword(password_user, user.password_user)) {
         return res.status(401).json({ error: 'Invalid password' });
       }
-  
+      const user_id = user.id_user;
       // Générer un token JWT
-      const token = generateToken({ id: user.id_user, email: user.email_user });
+      const token = generateToken({ id: user_id, email: user.email_user });
   
-      return res.status(200).json({ message: 'Login successful', token });
+      return res.status(200).json({ message: 'Login successful', token,  user_id});
     } catch (error) {
       console.error('Error during login:', error);
       return res.status(500).json({ error: 'Internal Server Error' });
