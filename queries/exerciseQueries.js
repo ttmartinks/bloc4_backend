@@ -23,14 +23,7 @@ exports.createExercise = async (exerciseData, breathingData) => {
 
 // Récupérer tous les exercices avec leurs détails de respiration
 exports.getAllExercises = async () => {
-  return await Exercises.findAll({
-    include: [
-      {
-        model: BreathingExercises,
-        as: 'breathingDetails',
-      },
-    ],
-  });
+  return await BreathingExercises.findAll();
 };
 
 // Récupérer un exercice par ID avec ses détails de respiration
