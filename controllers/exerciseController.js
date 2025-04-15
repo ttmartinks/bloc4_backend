@@ -29,6 +29,22 @@ exports.getAllExercises = async (req, res) => {
   }
 };
 
+exports.getExercisesByUser = async (req, res) => {
+    try {
+      if (!req.params.id) {
+        return res.status(400).json({ error: 'ID de l\'exercice manquant.' });
+      }
+      const exercise = await queries.getExercisesByUser(req.params.id);
+      if (!exercise) {
+        return res.status(404).json({ error: 'Exercice non trouvé.' });
+      }
+      return res.status(200).json(exercise);
+    } catch (error) {
+      console.error('Erreur lors de la récupération de l\'exercice :', error);
+      return res.status(500).json({ error: 'Erreur interne du serveur.' });
+    }
+  };
+
 exports.getExerciseById = async (req, res) => {
   try {
     if (!req.params.id) {

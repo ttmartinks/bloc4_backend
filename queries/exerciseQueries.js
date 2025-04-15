@@ -57,6 +57,28 @@ exports.getExerciseById = async (id) => {
   }
 };
 
+// Récupérer un exercice par ID avec ses détails de respiration
+
+exports.getExercisesByUser = async (id) => {
+  try {
+    const [results] = await sequelize.query(
+      `SELECT e.*, b.* 
+       FROM Exercises e
+       LEFT JOIN BreathingExercises b ON e.id_exercise = b.id_exercise
+       WHERE e.id_creator = :id`,
+      {
+        replacements: { id },
+        type: sequelize.QueryTypes.SELECT,
+      }
+    );
+
+    return results;
+  } catch (error) {
+    throw error;
+  }
+};
+
+
 // Mettre à jour un exercice et ses détails de respiration
 exports.updateExercise = async (id, exerciseData, breathingData) => {
   const transaction = await Exercises.sequelize.transaction();
