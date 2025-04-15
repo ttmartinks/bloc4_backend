@@ -11,8 +11,8 @@ exports.createExercise = async (req, res) => {
     const exerciseData = { title_exercise, type_exercise, id_creator };
     const breathingData = { seconds_inspiration, seconds_apnea, seconds_expiration, number_repetitions };
 
-    const exercise = await queries.createExercise(exerciseData, breathingData);
-    return res.status(201).json(exercise);
+    const result = await queries.createExercise(exerciseData, breathingData);
+    return res.status(201).json(result);
   } catch (error) {
     console.error('Erreur lors de la création de l\'exercice :', error);
     return res.status(500).json({ error: 'Erreur interne du serveur.' });
@@ -31,6 +31,9 @@ exports.getAllExercises = async (req, res) => {
 
 exports.getExerciseById = async (req, res) => {
   try {
+    if (!req.params.id) {
+      return res.status(400).json({ error: 'ID de l\'exercice manquant.' });
+    }
     const exercise = await queries.getExerciseById(req.params.id);
     if (!exercise) {
       return res.status(404).json({ error: 'Exercice non trouvé.' });

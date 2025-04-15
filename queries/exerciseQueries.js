@@ -14,7 +14,7 @@ exports.createExercise = async (exerciseData, breathingData) => {
     await BreathingExercises.create(breathingData, { transaction });
 
     await transaction.commit();
-    return exercise;
+    return { exercise, breathingData };
   } catch (error) {
     await transaction.rollback();
     throw error;
@@ -23,19 +23,38 @@ exports.createExercise = async (exerciseData, breathingData) => {
 
 // Récupérer tous les exercices avec leurs détails de respiration
 exports.getAllExercises = async () => {
-  return await BreathingExercises.findAll();
+  try {
+    const exercises = await Exercises.findAll();
+    const breathingDetails = await BreathingExercises.findAll();
+
+    // Associer les détails de respiration aux exercices
+    const result = exercises.map((exercise) => {
+      const breathing = breathingDetails.find(
+        (b) => b.id_exercise === exercise.id_exercise
+      );
+      return { ...exercise.toJSON(), breathingDetails: breathing || null };
+    });
+
+    return result;
+  } catch (error) {
+    throw error;
+  }
 };
 
 // Récupérer un exercice par ID avec ses détails de respiration
 exports.getExerciseById = async (id) => {
-  return await Exercises.findByPk(id, {
-    include: [
-      {
-        model: BreathingExercises,
-        as: 'breathingDetails',
-      },
-    ],
-  });
+  try {
+    const exercise = await Exercises.findByPk(id);
+    if (!exercise) return null;
+
+    const breathingDetails = await BreathingExercises.findOne({
+      where: { id_exercise: id },
+    });
+
+    return { ...exercise.toJSON(), breathingDetails };
+  } catch (error) {
+    throw error;
+  }
 };
 
 // Mettre à jour un exercice et ses détails de respiration
@@ -48,12 +67,14 @@ exports.updateExercise = async (id, exerciseData, breathingData) => {
     await exercise.update(exerciseData, { transaction });
 
     // Mettre à jour les détails de respiration
-    const breathingExercise = await BreathingExercises.findOne({ where: { id_exercise: id } });
+    const breathingExercise = await BreathingExercises.findOne({
+      where: { id_exercise: id },
+    });
     if (!breathingExercise) throw new Error('Détails de respiration non trouvés');
     await breathingExercise.update(breathingData, { transaction });
 
     await transaction.commit();
-    return exercise;
+    return { exercise, breathingData };
   } catch (error) {
     await transaction.rollback();
     throw error;
