@@ -58,22 +58,24 @@ exports.getExerciseById = async (id) => {
 };
 
 // Récupérer un exercice par ID avec ses détails de respiration
-
-exports.getExercisesByUser = async (id) => {
+exports.getExercisesByUser = async () => {
   try {
-    const [results] = await sequelize.query(
-      `SELECT e.*, b.* 
-       FROM Exercises e
-       LEFT JOIN BreathingExercises b ON e.id_exercise = b.id_exercise
-       WHERE e.id_creator = :id`,
-      {
-        replacements: { id },
-        type: sequelize.QueryTypes.SELECT,
-      }
-    );
+    const exercises = await Exercises.findAll({
+      where: { id_creator: userId }, // Filtrer par l'ID de l'utilisateur
+    });
+    const breathingDetails = await BreathingExercises.findAll();
 
-    return results;
+    // Associer les détails de respiration aux exercices
+    const result = exercises.map((exercise) => {
+      const breathing = breathingDetails.find(
+        (b) => b.id_exercise === exercise.id_exercise
+      );
+      return { ...exercise.toJSON(), breathingDetails: breathing || null };
+    });
+
+    return result;
   } catch (error) {
+    console.error('Erreur lors de la récupération des exercices par utilisateur :', error);
     throw error;
   }
 };
