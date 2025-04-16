@@ -58,10 +58,10 @@ exports.getExerciseById = async (id) => {
 };
 
 // Récupérer un exercice par ID avec ses détails de respiration
-exports.getExercisesByUser = async () => {
+exports.getExercisesByUser = async (id) => {
   try {
     const exercises = await Exercises.findAll({
-      where: { id_creator: userId }, // Filtrer par l'ID de l'utilisateur
+      where: { id_creator: id }, // Filtrer par l'ID de l'utilisateur
     });
     const breathingDetails = await BreathingExercises.findAll();
 
