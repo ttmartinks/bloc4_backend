@@ -117,7 +117,11 @@ exports.updateUser = async (req, res) => {
       updatedFields.pseudo_user = req.body.pseudo.trim();
     }
     if (req.body.password) {
-      updatedFields.password_user = req.body.password.trim();
+      let password_user = req.body.password.trim();
+      if (!isSha256(password_user)) {
+        password_user = hashPassword(password_user);
+      }
+      updatedFields.password_user = password_user;
     }
     if (req.body.id_role) {
       updatedFields.id_role = req.body.id_role.trim();
