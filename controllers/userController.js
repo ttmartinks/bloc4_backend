@@ -102,16 +102,16 @@ exports.updateUser = async (req, res) => {
     const updatedFields = {};
 
     if (req.body.id_role) {
-      updatedFields.id_role = req.body.id_role.trim();
+      updatedFields.id_role = req.body.id_role;
     }
     if (req.body.is_activ) {
-      updatedFields.is_activ = req.body.is_activ.trim();
+      updatedFields.is_activ = req.body.is_activ;
     }
     if (req.body.email) {
       updatedFields.email_user = req.body.email.trim();
     }
     if (req.body.age) {
-      updatedFields.age_user = req.body.age.trim();
+      updatedFields.age_user = req.body.age;
     }
     if (req.body.pseudo) {
       updatedFields.pseudo_user = req.body.pseudo.trim();
@@ -124,7 +124,7 @@ exports.updateUser = async (req, res) => {
       updatedFields.password_user = password_user;
     }
     if (req.body.id_role) {
-      updatedFields.id_role = req.body.id_role.trim();
+      updatedFields.id_role = req.body.id_role;
     }
 
     if (Object.keys(updatedFields).length === 0) {
