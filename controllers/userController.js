@@ -30,10 +30,11 @@ exports.loginUser = async (req, res) => {
         return res.status(401).json({ error: 'Invalid password' });
       }
       const user_id = user.id_user;
+      const role_id = user.id_role;
       // Générer un token JWT
       const token = generateToken({ id: user_id, email: user.email_user });
   
-      return res.status(200).json({ message: 'Login successful', token,  user_id});
+      return res.status(200).json({ message: 'Login successful', token,  user_id, role_id});
     } catch (error) {
       console.error('Error during login:', error);
       return res.status(500).json({ error: 'Internal Server Error' });
@@ -89,29 +90,48 @@ exports.getUserById = async (req, res) => {
 
 exports.updateUser = async (req, res) => {
   try {
-    if(!req.params.id) {
+    if (!req.params.id) {
       return res.status(400).json({ error: 'Missing user ID' });
-    }else{
-        const id_user = req.params.id;
     }
-    if(req.body.email) {
-        const email_user = req.body.email.trim();
-    }
-    if(req.body.age) {
-        const age_user = req.body.age.trim(); 
-    }
-    if(req.body.pseudo) {
-        const pseudo_user = req.body.pseudo.trim();
-    }
-    if(req.body.password) {
-        const password_user = req.body.password.trim();
-    }
-    const { username, email, password } = req.body;
+    const id_user = req.params.id;
 
-    const updatedUser = await queries.updateUser(id_user, { username_user, email_user, password_user });
+    if (!req.body) {
+      return res.status(400).json({ error: 'Missing request body' });
+    }
+
+    const updatedFields = {};
+
+    if (req.body.id_role) {
+      updatedFields.id_role = req.body.id_role.trim();
+    }
+    if (req.body.is_activ) {
+      updatedFields.is_activ = req.body.is_activ.trim();
+    }
+    if (req.body.email) {
+      updatedFields.email_user = req.body.email.trim();
+    }
+    if (req.body.age) {
+      updatedFields.age_user = req.body.age.trim();
+    }
+    if (req.body.pseudo) {
+      updatedFields.pseudo_user = req.body.pseudo.trim();
+    }
+    if (req.body.password) {
+      updatedFields.password_user = req.body.password.trim();
+    }
+    if (req.body.id_role) {
+      updatedFields.id_role = req.body.id_role.trim();
+    }
+
+    if (Object.keys(updatedFields).length === 0) {
+      return res.status(400).json({ error: 'No valid fields to update' });
+    }
+
+    const updatedUser = await queries.updateUser(id_user, updatedFields);
     if (!updatedUser) {
       return res.status(404).json({ error: 'User not found' });
     }
+
     return res.status(200).json(updatedUser);
   } catch (error) {
     console.error('Error updating user:', error);
