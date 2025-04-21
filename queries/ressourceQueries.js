@@ -56,12 +56,12 @@ exports.getFavoriteRessourcesUser = async (userId) => {
     WHERE uf.id_user = :userId AND uf.type_favorite = 1
   `;
 
-  const [results] = await sequelize.query(query, {
+  const results = await sequelize.query(query, {
     replacements: { userId },
     type: sequelize.QueryTypes.SELECT,
   });
 
-  return results;
+  return results; // Retourner directement les résultats
 };
 
 // Ajouter une ressource aux favoris d'un utilisateur
