@@ -127,3 +127,16 @@ exports.deleteExercise = async (id) => {
 exports.addExerciseHistory = async (data) => {
   return await HistoricExercises.create(data);
 };
+
+
+exports.getAllHistoriesForUser = async (id_user) => {
+  try {
+    return await HistoricExercises.findAll({
+      where: { id_user },
+      order: [['date_historic', 'DESC']],
+    });
+  } catch (error) {
+    console.error('Erreur lors de la récupération des historiques :', error);
+    throw error;
+  }
+};

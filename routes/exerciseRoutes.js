@@ -10,5 +10,5 @@ router.get('/user/:id', exerciseController.getExercisesByUser);
 router.put('/:id', exerciseController.updateExercise);
 router.delete('/:id', exerciseController.deleteExercise);
 router.post('/history', exerciseController.addExerciseHistory);
-
+router.get('/history/:id_user', exerciseController.getAllHistoriesForUser);
 module.exports = router;

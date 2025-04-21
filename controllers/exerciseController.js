@@ -101,3 +101,24 @@ exports.addExerciseHistory = async (req, res) => {
     return res.status(500).json({ error: 'Erreur interne du serveur.' });
   }
 };
+
+exports.getAllHistoriesForUser = async (req, res) => {
+  try {
+    const { id_user } = req.params;
+
+    if (!id_user) {
+      return res.status(400).json({ error: 'ID utilisateur est requis.' });
+    }
+
+    const histories = await queries.getAllHistoriesForUser(id_user);
+
+    if (!histories || histories.length === 0) {
+      return res.status(404).json({ error: 'Aucun historique trouvé pour cet utilisateur.' });
+    }
+
+    return res.status(200).json(histories);
+  } catch (error) {
+    console.error('Erreur lors de la récupération des historiques :', error);
+    return res.status(500).json({ error: 'Erreur interne du serveur.' });
+  }
+};
