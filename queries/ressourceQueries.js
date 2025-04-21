@@ -65,10 +65,33 @@ exports.getFavoriteRessourcesUser = async (userId) => {
 };
 
 // Ajouter une ressource aux favoris d'un utilisateur
+// Ajouter ou supprimer une ressource des favoris d'un utilisateur
 exports.addFavoriteRessource = async (userId, ressourceId) => {
-  return await UsersFavorites.create({
-    id_user: userId,
-    id_related_item: ressourceId,
-    type_favorite: 1, 
-  });
+  try {
+    // Vérifier si une ligne existe déjà pour cet utilisateur et cette ressource
+    const existingFavorite = await UsersFavorites.findOne({
+      where: {
+        id_user: userId,
+        id_related_item: ressourceId,
+        type_favorite: 1, // Type 1 pour les ressources
+      },
+    });
+
+    if (existingFavorite) {
+      // Si la ligne existe déjà, la supprimer
+      await existingFavorite.destroy();
+      return { message: 'Ressource retirée des favoris.' };
+    } else {
+      // Sinon, créer une nouvelle ligne
+      const newFavorite = await UsersFavorites.create({
+        id_user: userId,
+        id_related_item: ressourceId,
+        type_favorite: 1, // Type 1 pour les ressources
+      });
+      return { message: 'Ressource ajoutée aux favoris.', favorite: newFavorite };
+    }
+  } catch (error) {
+    console.error('Erreur dans addFavoriteRessource :', error);
+    throw error;
+  }
 };
