@@ -6,7 +6,8 @@ const ressourceController = require('../controllers/ressourceController');
 router.post('/', ressourceController.createRessource);
 router.get('/', ressourceController.getAllRessources);
 router.get('/user/:id', ressourceController.getRessourcesByUser);
-router.get('/favorites/:id', ressourceController.getFavoritesRessourcesUser); // Nouvelle route
+router.get('/favorites/:id', ressourceController.getFavoritesRessourcesUser); 
+router.post('/favorites', ressourceController.addFavoriteRessource);
 router.get('/:id', ressourceController.getRessourceById);
 router.put('/:id', ressourceController.updateRessource);
 router.delete('/:id', ressourceController.deleteRessource);

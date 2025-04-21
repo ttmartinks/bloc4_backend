@@ -42,7 +42,16 @@ exports.deleteRessource = async (id) => {
 
 exports.getFavoriteRessourcesUser = async (userId) => {
   return await UsersFavorites.findAll({
-    where: { id_user: userId, type_favorite: 1 }, // type_favorite = 1 pour les ressources
+    where: { id_user: userId, type_favorite: 1 },
     
+  });
+};
+
+// Ajouter une ressource aux favoris d'un utilisateur
+exports.addFavoriteRessource = async (userId, ressourceId) => {
+  return await UsersFavorites.create({
+    id_user: userId,
+    id_related_item: ressourceId,
+    type_favorite: 1, 
   });
 };

@@ -101,3 +101,20 @@ exports.getFavoritesRessourcesUser = async (req, res) => {
     return res.status(500).json({ error: 'Erreur interne du serveur.' });
   }
 };
+
+exports.addFavoriteRessource = async (req, res) => {
+  try {
+    const { id_user, id_related_item } = req.body;
+
+    if (!id_user || !id_related_item) {
+      return res.status(400).json({ error: 'ID utilisateur et ID ressource sont requis.' });
+    }
+
+    const favorite = await queries.addFavoriteRessource(id_user, id_related_item);
+
+    return res.status(201).json({ message: 'Ressource ajoutée aux favoris.', favorite });
+  } catch (error) {
+    console.error('Erreur lors de l\'ajout de la ressource aux favoris :', error);
+    return res.status(500).json({ error: 'Erreur interne du serveur.' });
+  }
+};
