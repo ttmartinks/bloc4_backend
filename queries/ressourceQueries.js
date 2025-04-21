@@ -41,9 +41,26 @@ exports.deleteRessource = async (id) => {
 // FAVORITES
 
 exports.getFavoriteRessourcesUser = async (userId) => {
-  return await UsersFavorites.findAll({
-    where: { id_user: userId, type_favorite: 1 },
+  const query = `
+    SELECT 
+      uf.id_favorite,
+      uf.id_user,
+      uf.id_related_item,
+      uf.type_favorite,
+      r.id_ressource,
+      r.title_ressource,
+      r.content_ressource
+    FROM users_favorites uf
+    JOIN resources r ON uf.id_related_item = r.id_ressource
+    WHERE uf.id_user = :userId AND uf.type_favorite = 1
+  `;
+
+  const [results] = await sequelize.query(query, {
+    replacements: { userId },
+    type: sequelize.QueryTypes.SELECT,
   });
+
+  return results;
 };
 
 // Ajouter une ressource aux favoris d'un utilisateur
