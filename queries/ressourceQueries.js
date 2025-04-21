@@ -1,4 +1,5 @@
 const { Resources, UsersFavorites } = require('../models');
+const { sequelize } = require('../config/db');
 
 // Créer une ressource
 exports.createRessource = async (data) => {
