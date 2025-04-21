@@ -39,6 +39,20 @@ exports.getRessourceById = async (req, res) => {
   }
 };
 
+exports.getRessourcesByUser = async (req, res) => {
+  try {
+    const userId = req.params.id;
+    const ressources = await queries.getRessourcesByUser(userId);
+    if (!ressources || ressources.length === 0) {
+      return res.status(404).json({ error: 'Aucune ressource trouvée pour cet utilisateur.' });
+    }
+    return res.status(200).json(ressources);
+  } catch (error) {
+    console.error('Erreur lors de la récupération des ressources utilisateur :', error);
+    return res.status(500).json({ error: 'Erreur interne du serveur.' });
+  }
+};
+
 exports.updateRessource = async (req, res) => {
   try {
     const updatedRessource = await queries.updateRessource(req.params.id, req.body);

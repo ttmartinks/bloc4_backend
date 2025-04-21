@@ -15,6 +15,13 @@ exports.getRessourceById = async (id) => {
   return await Resources.findByPk(id);
 };
 
+exports.getRessourcesByUser = async (userId) => {
+  return await Resources.findAll({
+    where: { id_creator: userId },
+    order: [['date_ressource', 'DESC']], // Trier par date décroissante
+  });
+};
+
 // Mettre à jour une ressource
 exports.updateRessource = async (id, data) => {
   const ressource = await Resources.findByPk(id);
