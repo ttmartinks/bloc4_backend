@@ -85,3 +85,19 @@ exports.deleteExercise = async (req, res) => {
     return res.status(500).json({ error: 'Erreur interne du serveur.' });
   }
 };
+
+exports.addExerciseHistory = async (req, res) => {
+  try {
+    const { id_exercise, id_user, seconds_exercise } = req.body;
+
+    if (!id_exercise || !id_user || !seconds_exercise) {
+      return res.status(400).json({ error: 'Tous les champs sont obligatoires.' });
+    }
+
+    const history = await queries.addExerciseHistory({ id_exercise, id_user, seconds_exercise });
+    return res.status(201).json(history);
+  } catch (error) {
+    console.error('Erreur lors de l\'enregistrement de l\'historique :', error);
+    return res.status(500).json({ error: 'Erreur interne du serveur.' });
+  }
+};

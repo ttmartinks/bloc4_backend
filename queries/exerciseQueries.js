@@ -1,4 +1,4 @@
-const { Exercises, BreathingExercises } = require('../models');
+const { Exercises, BreathingExercises, HistoricExercises } = require('../models');
 
 // Créer un exercice avec ses détails de respiration
 exports.createExercise = async (exerciseData, breathingData) => {
@@ -121,4 +121,9 @@ exports.deleteExercise = async (id) => {
     await transaction.rollback();
     throw error;
   }
+};
+
+
+exports.addExerciseHistory = async (data) => {
+  return await HistoricExercises.create(data);
 };
