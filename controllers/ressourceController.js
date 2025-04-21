@@ -78,3 +78,26 @@ exports.deleteRessource = async (req, res) => {
     return res.status(500).json({ error: 'Erreur interne du serveur.' });
   }
 };
+
+// FAVORITES
+
+exports.getFavoritesRessourcesUser = async (req, res) => {
+  try {
+    const userId = req.params.id;
+
+    if (!userId) {
+      return res.status(400).json({ error: 'ID utilisateur manquant.' });
+    }
+
+    const favorites = await queries.getFavoriteRessourcesUser(userId);
+
+    if (!favorites || favorites.length === 0) {
+      return res.status(404).json({ error: 'Aucune ressource favorite trouvée pour cet utilisateur.' });
+    }
+
+    return res.status(200).json(favorites);
+  } catch (error) {
+    console.error('Erreur lors de la récupération des ressources favorites :', error);
+    return res.status(500).json({ error: 'Erreur interne du serveur.' });
+  }
+};

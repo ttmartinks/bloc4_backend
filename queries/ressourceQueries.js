@@ -1,4 +1,4 @@
-const { Resources } = require('../models');
+const { Resources, UsersFavorites } = require('../models');
 
 // Créer une ressource
 exports.createRessource = async (data) => {
@@ -36,4 +36,18 @@ exports.deleteRessource = async (id) => {
   if (!ressource) return null;
   await ressource.destroy();
   return ressource;
+};
+
+// FAVORITES
+
+exports.getFavoritesRessourcesUser = async (userId) => {
+  return await UsersFavorites.findAll({
+    where: { id_user: userId, type_favorite: 1 }, // type_favorite = 1 pour les ressources
+    include: [
+      {
+        model: Resources,
+        as: 'resource',
+      },
+    ],
+  });
 };
