@@ -43,11 +43,6 @@ exports.deleteRessource = async (id) => {
 exports.getFavoriteRessourcesUser = async (userId) => {
   return await UsersFavorites.findAll({
     where: { id_user: userId, type_favorite: 1 }, // type_favorite = 1 pour les ressources
-    include: [
-      {
-        model: Resources,
-        as: 'resource',
-      },
-    ],
+    
   });
 };
