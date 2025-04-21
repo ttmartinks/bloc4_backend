@@ -90,7 +90,7 @@ exports.getFavoritesRessourcesUser = async (req, res) => {
     }
 
     const favorites = await queries.getFavoriteRessourcesUser(userId);
-
+    console.log('Favorites:', favorites); // Debugging line
     if (!favorites || favorites.length === 0) {
       return res.status(404).json({ error: 'Aucune ressource favorite trouvée pour cet utilisateur.' });
     }
