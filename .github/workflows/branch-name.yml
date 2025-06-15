@@ -11,6 +11,8 @@ jobs:
       - name: Check branch name
         uses: lekterable/branchlint-action@2.1.0
         with:
-          regex: '^(feature|fix)_[a-zA-Z0-9_\-]+$'
-          ignore: main
+          allowed: |
+            /^feature_[a-zA-Z0-9_\-]+$/
+            /^fix_[a-zA-Z0-9_\-]+$/
+            main
           errorMessage: "❌ Le nom de la branche doit commencer par 'feature_' ou 'fix_' (ex: feature_login, fix_bug123)."
