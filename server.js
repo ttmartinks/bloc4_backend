@@ -19,6 +19,6 @@ const PORT = process.env.PORT;
 */
 db.connectDB().then(() => {
   app.listen(PORT, () => {
-    console.log(`🚀 Serveur backend lancé : fathomless-bayou-78802-ce92865f8d04.herokuapp.com`);
+    console.log(`🚀 Serveur backend lancé`);
   });
 });
