@@ -9,7 +9,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Check branch name
-        uses: lekterable/branch-name-lint-action@v1
+        uses: lekterable/branchlint-action@2.1.0
         with:
           regex: '^(feature|fix)_[a-zA-Z0-9_\-]+$'
           ignore: main
