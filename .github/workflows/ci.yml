@@ -20,8 +20,8 @@ jobs:
 
       - name: Vérifier la connexion à la base de données
         run: |
-          export PGPASSWORD="${{ secrets.DB_PASSWORD }}"
-          until pg_isready -h ${{ secrets.DB_HOST }} -p ${{ secrets.DB_PORT }} -U ${{ secrets.DB_USER }} -d ${{ secrets.DB_NAME }}; do
+          export PGPASSWORD="${{ secrets.PGPASSWORD }}"
+          until pg_isready -h ${{ secrets.PGHOST }} -p ${{ secrets.PGPORT }} -U ${{ secrets.PGUSER }} -d ${{ secrets.PGDATABASE }}; do
             echo "En attente de la base de données..."
             sleep 2
           done
@@ -30,14 +30,18 @@ jobs:
       - name: Run Jest tests
         run: npm test
         env:
-          DB_HOST: ${{ secrets.DB_HOST }}
-          DB_PORT: ${{ secrets.DB_PORT }}
-          DB_USER: ${{ secrets.DB_USER }}
-          DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
-          DB_NAME: ${{ secrets.DB_NAME }}
+          PGHOST: ${{ secrets.PGHOST }}
+          PGUSER: ${{ secrets.PGUSER }}
+          PGPORT: ${{ secrets.PGPORT }}
+          PGDATABASE: ${{ secrets.PGDATABASE }}
+          PGPASSWORD: ${{ secrets.PGPASSWORD }}
+          PORT: ${{ secrets.PORT }}
+          SHA256_SALT: ${{ secrets.SHA256_SALT }}
+          JWT_SECRET: ${{ secrets.JWT_SECRET }}
+          JWT_EXPIRES_IN: ${{ secrets.JWT_EXPIRES_IN }}
 
       - name: SonarQube Scan
         uses: sonarsource/sonarqube-scan-action@master
         env:
-          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+          SONAR_TOKEN: ${{ secrets.SONAR_API_KEY }}
           SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
