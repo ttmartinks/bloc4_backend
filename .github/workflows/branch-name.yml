@@ -1,0 +1,16 @@
+name: Branch Name Check
+
+on:
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  check-branch-name:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check branch name
+        uses: lekterable/branch-name-lint-action@v1.5.0
+        with:
+          regex: '^(feature|fix)_[a-zA-Z0-9_\-]+$'
+          ignore: main
+          errorMessage: "❌ Le nom de la branche doit commencer par 'feature_' ou 'fix_' (ex: feature_login, fix_bug123)."
