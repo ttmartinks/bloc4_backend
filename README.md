@@ -17,6 +17,7 @@ CESIZen est une plateforme de gestion du stress et de sensibilisation à la sant
 - [Plan de sécurisation](#plan-de-sécurisation)
 - [Bonnes pratiques de développement](#bonnes-pratiques-de-développement)
 - [Veille technologique](#veille-technologique)
+- [Documentation API](#documentation-api)
 - [Auteur](#auteur)
 - [Licence](#licence)
 
@@ -159,6 +160,77 @@ CESIZen est une plateforme de gestion du stress et de sensibilisation à la sant
 - **Suivi des mises à jour critiques** grâce aux notifications des repositories GitHub des principaux outils utilisés (Node.js, Express, Sequelize).
 - **Participation à des groupes et forums** (Discord, Slack, Stack Overflow) avec notifications activées pour les sujets pertinents.
 - **Flux RSS** pour recevoir en temps réel les articles et annonces des éditeurs de technologies utilisées.
+---
+
+## Documentation API
+
+### Authentification & Utilisateurs
+
+| Méthode | Endpoint                | Description                                 |
+|---------|------------------------|---------------------------------------------|
+| POST    | `/api/user`            | Créer un utilisateur                        |
+| POST    | `/api/user/login`      | Connexion utilisateur (retourne un JWT)     |
+| GET     | `/api/user`            | Récupérer tous les utilisateurs             |
+| GET     | `/api/user/:id`        | Récupérer un utilisateur par ID             |
+| PUT     | `/api/user/:id`        | Mettre à jour un utilisateur                |
+| DELETE  | `/api/user/:id`        | Supprimer un utilisateur                    |
+
+---
+
+### Ressources
+
+| Méthode | Endpoint                        | Description                                         |
+|---------|---------------------------------|-----------------------------------------------------|
+| POST    | `/api/ressource`                | Créer une ressource                                 |
+| GET     | `/api/ressource`                | Récupérer toutes les ressources                     |
+| GET     | `/api/ressource/:id`            | Récupérer une ressource par ID                      |
+| PUT     | `/api/ressource/:id`            | Mettre à jour une ressource                         |
+| DELETE  | `/api/ressource/:id`            | Supprimer une ressource                             |
+| GET     | `/api/ressource/user/:id`       | Récupérer les ressources créées par un utilisateur  |
+
+#### Favoris Ressources
+
+| Méthode | Endpoint                                 | Description                                         |
+|---------|------------------------------------------|-----------------------------------------------------|
+| GET     | `/api/ressource/favorites/:id`           | Récupérer les ressources favorites d’un utilisateur |
+| POST    | `/api/ressource/favorites`               | Ajouter/retirer une ressource des favoris           |
+
+---
+
+### Exercices
+
+| Méthode | Endpoint                                 | Description                                         |
+|---------|------------------------------------------|-----------------------------------------------------|
+| POST    | `/api/exercise`                          | Créer un exercice                                   |
+| GET     | `/api/exercise`                          | Récupérer tous les exercices                        |
+| GET     | `/api/exercise/:id`                      | Récupérer un exercice par ID                        |
+| PUT     | `/api/exercise/:id`                      | Mettre à jour un exercice                           |
+| DELETE  | `/api/exercise/:id`                      | Supprimer un exercice                               |
+| GET     | `/api/exercise/user/:id`                 | Récupérer les exercices d’un utilisateur            |
+
+#### Historique des exercices
+
+| Méthode | Endpoint                                 | Description                                         |
+|---------|------------------------------------------|-----------------------------------------------------|
+| POST    | `/api/exercise/history`                  | Ajouter un historique d’exercice                    |
+| GET     | `/api/exercise/history/:id_user`         | Récupérer l’historique des exercices d’un utilisateur |
+
+---
+
+### Tests & Divers
+
+| Méthode | Endpoint        | Description                                 |
+|---------|----------------|---------------------------------------------|
+| GET     | `/api/hello`   | Test de disponibilité de l’API              |
+| GET     | `/api/test`    | Endpoint de test                            |
+
+---
+
+**Remarque** :  
+- Tous les endpoints acceptent et renvoient des données au format JSON.
+- Certains endpoints nécessitent un JWT dans l’en-tête `Authorization`.
+- Pour plus de détails sur les paramètres attendus, voir le code source des contrôleurs.
+
 ---
 
 ## Auteur
