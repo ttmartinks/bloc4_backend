@@ -1,244 +1,506 @@
+# CESIZen – Backend API
 
-# CESIZen – Backend
+## 📋 Présentation
 
-## Présentation
-
-CESIZen est une plateforme de gestion du stress et de sensibilisation à la santé mentale. Ce dépôt concerne le **backend** de l’application, développé en Node.js/Express, connecté à une base PostgreSQL Azure, et déployé sur Heroku.
+CESIZen est une plateforme de gestion du stress et de sensibilisation à la santé mentale. Ce dépôt contient l'**API REST backend** développée en Node.js/Express, connectée à une base PostgreSQL Azure et déployée sur Heroku avec une pipeline CI/CD complète.
 
 ---
 
-## Table des matières
+## 📚 Table des matières
 
-- [Architecture et plan de déploiement](#architecture-et-plan-de-déploiement)
-- [Environnements](#environnements)
-- [CI/CD et automatisation](#cicd-et-automatisation)
-- [Versioning et gestion des évolutions](#versioning-et-gestion-des-évolutions)
-- [Maintenance et ticketing](#maintenance-et-ticketing)
-- [Plan de sécurisation](#plan-de-sécurisation)
-- [Bonnes pratiques de développement](#bonnes-pratiques-de-développement)
-- [Veille technologique](#veille-technologique)
+- [Architecture](#architecture)
+- [Installation et développement local](#installation-et-développement-local)
+- [Configuration des variables d'environnement](#configuration-des-variables-denvironnement)
 - [Documentation API](#documentation-api)
-- [Auteur](#auteur)
-- [Licence](#licence)
+- [CI/CD et automatisation](#cicd-et-automatisation)
+- [Sécurité](#sécurité)
+- [Tests automatisés](#tests-automatisés)
+- [Monitoring et observabilité](#monitoring-et-observabilité)
+- [Déploiement](#déploiement)
+- [Maintenance et gestion des évolutions](#maintenance-et-gestion-des-évolutions)
+- [Veille technologique](#veille-technologique)
+- [Troubleshooting](#troubleshooting)
 
 ---
 
-## Architecture et plan de déploiement
+## 🏗️ Architecture
 
-### Schéma général
+### Stack technique
+- **Runtime** : Node.js 18+
+- **Framework** : Express.js 5.x
+- **Base de données** : PostgreSQL (Azure Database)
+- **ORM** : Sequelize 6.x
+- **Authentification** : JWT (jsonwebtoken)
+- **Cryptographie** : SHA-256 + salt pour les mots de passe
+- **Tests** : Jest + Supertest
+- **Déploiement** : Heroku
+- **CI/CD** : GitHub Actions
 
-- **Frontend** : React Native (hors de ce dépôt)
-- **Backend** : Node.js/Express (ce dépôt)
-- **Base de données** : PostgreSQL (Azure)
-- **Hébergement** : Heroku
-
-### Étapes de déploiement
-
-1. **Développement local**  
-   - Utilisation d’un fichier `.env` pour la configuration.
-   - Lancement du serveur avec `npm start`.
-2. **Versioning**  
-   - Utilisation de Git et GitHub.
-   - Branches : `main` (prod), `feature_xxx`, `fix_xxx`.
-3. **CI/CD**  
-   - Automatisation via GitHub Actions (voir section dédiée).
-4. **Déploiement**  
-   - Déploiement automatique sur Heroku à chaque merge sur `main`.
-   - Variables d’environnement configurées dans Heroku (pas de `.env` en prod).
-
----
-
-## Environnements
-
-- **Développement** : Local, avec base Azure ou base locale.
-- **Test** : CI GitHub Actions, connexion à la base Azure.
-- **Production** : Heroku, connexion à la base Azure.
+### Architecture des dossiers
+```
+├── .github/workflows/     # Workflows GitHub Actions
+├── config/               # Configuration base de données
+├── controllers/          # Logique métier des endpoints
+├── models/              # Modèles Sequelize (entités DB)
+├── queries/             # Requêtes et interactions DB
+├── routes/              # Définition des routes API
+├── tests/               # Tests unitaires et d'intégration
+├── utils/               # Utilitaires (JWT, password, etc.)
+├── app.js               # Configuration Express
+├── server.js            # Point d'entrée de l'application
+└── package.json         # Dépendances et scripts
+```
 
 ---
 
-## CI/CD et automatisation
+## 🚀 Installation et développement local
 
-### Outils
+### Prérequis
+- Node.js 18+ et npm
+- Accès à une base PostgreSQL (Azure ou locale)
+- Git
 
-- **GitHub Actions** pour l’intégration et le déploiement continus.
-- **Heroku** pour l’hébergement.
-- **SonarQube** pour l’analyse de la qualité du code.
+### Installation
+```bash
+# Cloner le repository
+git clone https://github.com/<username>/cesizen-backend.git
+cd cesizen-backend
 
-### Workflows
+# Installer les dépendances
+npm install
 
-- **CI** (Continuous Integration) :
-  - Vérification du nom de branche (`feature_` ou `fix_`)
-  - Vérification de la connexion à la BDD
-  - Lancement des tests Jest
-  - Analyse SonarQube
-- **CD** (Continuous Deployment) :
-  - Déploiement automatique sur Heroku à chaque push sur `main`
+# Configurer les variables d'environnement
+cp .env.example .env
+# Éditer le fichier .env avec vos configurations
+
+# Lancer le serveur en développement
+npm start
+```
+
+### Scripts disponibles
+```bash
+npm start          # Lancer le serveur de production
+npm test           # Exécuter les tests Jest
+npm run dev        # Mode développement avec auto-reload (à configurer)
+```
+
+---
+
+## ⚙️ Configuration des variables d'environnement
+
+### Variables requises dans `.env`
+```env
+# Base de données PostgreSQL
+PGHOST=cesizen.postgres.database.azure.com
+PGUSER=admin_cesizen
+PGPORT=5432
+PGDATABASE=postgres
+PGPASSWORD=your_password
+
+# Serveur
+PORT=3000
+
+# Sécurité
+SHA256_SALT=your_random_salt
+JWT_SECRET=your_jwt_secret_key
+JWT_EXPIRES_IN=72h
+
+# Outils externes (optionnels)
+SONAR_API_KEY=your_sonar_key
+HEROKU_API_KEY=your_heroku_key
+```
+
+### Configuration Heroku
+Variables à définir dans les **Config Vars** Heroku :
+- `PGHOST`, `PGUSER`, `PGPORT`, `PGDATABASE`, `PGPASSWORD`
+- `SHA256_SALT`, `JWT_SECRET`, `JWT_EXPIRES_IN`
+- `PORT` (automatiquement défini par Heroku)
+
+---
+
+## 📡 Documentation API
+
+### Base URL
+- **Local** : `http://localhost:3000`
+- **Production** : `https://cesizenbackend-0b349b880511.herokuapp.com`
+
+### Authentification
+L'API utilise des tokens JWT. Incluez le token dans l'en-tête :
+```
+Authorization: Bearer <your_jwt_token>
+```
+
+### Endpoints principaux
+
+#### 👤 Authentification & Utilisateurs
+| Méthode | Endpoint | Description | Auth requise |
+|---------|----------|-------------|--------------|
+| POST | `/api/user` | Créer un compte utilisateur | Non |
+| POST | `/api/user/login` | Connexion (retourne un JWT) | Non |
+| GET | `/api/user` | Liste tous les utilisateurs | Oui |
+| GET | `/api/user/:id` | Détails d'un utilisateur | Oui |
+| PUT | `/api/user/:id` | Modifier un utilisateur | Oui |
+| DELETE | `/api/user/:id` | Supprimer un utilisateur | Oui |
+
+#### 📚 Ressources
+| Méthode | Endpoint | Description | Auth requise |
+|---------|----------|-------------|--------------|
+| POST | `/api/ressource` | Créer une ressource | Oui |
+| GET | `/api/ressource` | Liste toutes les ressources | Non |
+| GET | `/api/ressource/:id` | Détails d'une ressource | Non |
+| PUT | `/api/ressource/:id` | Modifier une ressource | Oui |
+| DELETE | `/api/ressource/:id` | Supprimer une ressource | Oui |
+| GET | `/api/ressource/user/:id` | Ressources d'un utilisateur | Oui |
+| GET | `/api/ressource/favorites/:id` | Favoris d'un utilisateur | Oui |
+| POST | `/api/ressource/favorites` | Ajouter/retirer des favoris | Oui |
+
+#### 🧘 Exercices de respiration
+| Méthode | Endpoint | Description | Auth requise |
+|---------|----------|-------------|--------------|
+| POST | `/api/exercise` | Créer un exercice | Oui |
+| GET | `/api/exercise` | Liste tous les exercices | Non |
+| GET | `/api/exercise/:id` | Détails d'un exercice | Non |
+| PUT | `/api/exercise/:id` | Modifier un exercice | Oui |
+| DELETE | `/api/exercise/:id` | Supprimer un exercice | Oui |
+| GET | `/api/exercise/user/:id` | Exercices d'un utilisateur | Oui |
+| POST | `/api/exercise/history` | Enregistrer une session | Oui |
+| GET | `/api/exercise/history/:id_user` | Historique utilisateur | Oui |
+
+#### 🔧 Utilitaires
+| Méthode | Endpoint | Description |
+|---------|----------|-------------|
+| GET | `/api/hello` | Test de santé de l'API |
+| GET | `/api/test` | Endpoint de test |
+
+### Exemples de requêtes
+
+#### Créer un utilisateur
+```bash
+curl -X POST https://cesizenbackend-0b349b880511.herokuapp.com/api/user \
+  -H "Content-Type: application/json" \
+  -d '{
+    "email": "user@example.com",
+    "age": "25",
+    "pseudo": "monpseudo",
+    "password": "monmotdepasse"
+  }'
+```
+
+#### Se connecter
+```bash
+curl -X POST https://cesizenbackend-0b349b880511.herokuapp.com/api/user/login \
+  -H "Content-Type: application/json" \
+  -d '{
+    "email": "user@example.com",
+    "password": "monmotdepasse"
+  }'
+```
+
+---
+
+## 🔄 CI/CD et automatisation
+
+### Workflows GitHub Actions
+
+#### 1. CI Pipeline (`.github/workflows/ci.yml`)
+Déclenché à chaque **Pull Request** vers `main` :
+
+```yaml
+jobs:
+  branch-name-check:    # Vérifie le format des noms de branches
+  db-check:            # Teste la connexion à la base de données
+  test:                # Exécute les tests Jest
+  sonar:               # Analyse qualité du code SonarQube
+```
+
+#### 2. Auto-suppression des branches (`.github/workflows/delete-branch.yml`)
+Supprime automatiquement les branches après merge des PR.
 
 ### Protection de la branche `main`
+- **Pull Request obligatoire** pour tout changement
+- **Review requise** avant merge
+- **Checks CI obligatoires** :
+  - ✅ Format du nom de branche (`feature_*` ou `fix_*`)
+  - ✅ Connexion base de données
+  - ✅ Tests Jest
+  - ✅ Analyse SonarQube
 
-- **Merge uniquement via PR** (pas de push direct)
-- **Checks obligatoires** : nom de branche, tests, SonarQube
-- **Validation humaine requise** (review)
-
----
-
-## Versioning et gestion des évolutions
-
-- **Branches** :
-  - `main` : branche de production, protégée
-  - `feature_xxx` / `fix_xxx` : branches de développement
-- **Pull Requests** :
-  - Obligatoires pour toute modification sur `main`
-  - Validation par un reviewer et passage des checks CI
-- **Suppression automatique des branches mergées** : activée
-- **Gestion des évolutions et corrections** :
-  - Utilisation de GitHub Issues pour le ticketing (bugs, évolutions)
-  - Méthodologie : création d’une issue, branche dédiée, PR, review, merge
+### Déploiement automatique
+- **Push sur `main`** → Déploiement automatique sur Heroku
+- **Variables d'environnement** configurées dans Heroku Config Vars
+- **Rollback automatique** en cas d'échec de déploiement
 
 ---
 
-## Maintenance et ticketing
+## 🔒 Sécurité
 
-- **Outil de ticketing** : GitHub Issues
-- **Processus** :
-  1. Création d’une issue (bug ou évolution)
-  2. Attribution et planification
-  3. Développement sur branche dédiée
-  4. PR, review, merge
-  5. Clôture de l’issue
+### Authentification et autorisation
+- **JWT tokens** avec expiration (72h par défaut)
+- **Mots de passe hashés** avec SHA-256 + salt unique
+- **Validation des entrées** dans tous les contrôleurs
+- **CORS configuré** pour limiter les origines autorisées
 
----
+### Protection des données
+- **Variables sensibles** stockées dans des secrets (jamais en dur)
+- **Base de données** : connexion SSL obligatoire
+- **Logs** : pas d'exposition de données sensibles
+- **Headers de sécurité** configurés via CORS
 
-## Plan de sécurisation
+### Bonnes pratiques implémentées
+- **ORM Sequelize** pour prévenir les injections SQL
+- **Validation des paramètres** d'entrée
+- **Gestion des erreurs** sans exposition d'informations système
+- **Rate limiting** (à implémenter si nécessaire)
 
-### Vulnérabilités et risques identifiés
-
-- Fuite de secrets (évité par l’utilisation de secrets GitHub/Heroku)
-- Injection SQL (ORM Sequelize)
-- Authentification JWT sécurisée
-- Données sensibles chiffrées (ex : SHA256 pour les mots de passe)
-- RGPD : gestion des données personnelles, suppression sur demande
-
-### Actions correctives et préventives
-
-- Variables sensibles jamais versionnées (pas de `.env` dans le repo)
-- Accès à la BDD limité par IP et credentials forts
-- Utilisation de HTTPS sur Heroku
-- Analyse SonarQube à chaque PR
-- Logs d’erreur sans fuite d’informations sensibles
-
-### Gestion de crise
-
-- Procédure de rotation des secrets en cas de fuite
-- Communication rapide via GitHub Issues et mails
-- Documentation des incidents et correctifs
-
-### RGPD et données personnelles
-
-- Collecte minimale des données
-- Droit à l’oubli : suppression sur demande
-- Stockage sécurisé des mots de passe (hash + salt)
-- Journalisation des accès sensibles
+### Conformité RGPD
+- **Collecte minimale** des données personnelles
+- **Droit à l'oubli** : endpoint de suppression utilisateur
+- **Chiffrement** des mots de passe
+- **Audit trail** des accès sensibles
 
 ---
 
-## Bonnes pratiques de développement
+## 🧪 Tests automatisés
 
-- Respect des conventions de nommage (branches, variables)
-- Revue de code systématique
-- Tests automatisés (Jest)
-- Utilisation de l’ORM pour éviter les injections
-- Séparation des responsabilités (routes, contrôleurs, modèles)
-- Documentation du code et des endpoints
+### Types de tests
+- **Tests unitaires** : Fonctions utilitaires (JWT, password)
+- **Tests d'intégration** : Endpoints API complets
+- **Tests de régression** : Validation du comportement existant
 
----
+### Structure des tests
+```
+tests/
+├── userRoutes.test.js      # Tests des endpoints utilisateurs
+├── ressourceRoutes.test.js # Tests des endpoints ressources
+├── exerciseRoutes.test.js  # Tests des endpoints exercices
+├── userQueries.test.js     # Tests des requêtes DB utilisateurs
+├── passwordUtils.test.js   # Tests des utilitaires cryptographiques
+└── ...
+```
 
-## Veille technologique
+### Exécution des tests
+```bash
+# Tous les tests
+npm test
 
-- **Abonnement à des newsletters spécialisées** (Node Weekly, OWASP, PostgreSQL Weekly) pour recevoir chaque semaine les nouveautés et alertes de sécurité.
-- **Alertes de sécurité automatiques** via GitHub Dependabot : notifications immédiates en cas de vulnérabilité sur les dépendances du projet.
-- **Suivi des mises à jour critiques** grâce aux notifications des repositories GitHub des principaux outils utilisés (Node.js, Express, Sequelize).
-- **Participation à des groupes et forums** (Discord, Slack, Stack Overflow) avec notifications activées pour les sujets pertinents.
-- **Flux RSS** pour recevoir en temps réel les articles et annonces des éditeurs de technologies utilisées.
----
+# Tests en mode verbose
+npm test -- --verbose
 
-## Documentation API
+# Tests d'un fichier spécifique
+npm test userRoutes.test.js
+```
 
-### Authentification & Utilisateurs
-
-| Méthode | Endpoint                | Description                                 |
-|---------|------------------------|---------------------------------------------|
-| POST    | `/api/user`            | Créer un utilisateur                        |
-| POST    | `/api/user/login`      | Connexion utilisateur (retourne un JWT)     |
-| GET     | `/api/user`            | Récupérer tous les utilisateurs             |
-| GET     | `/api/user/:id`        | Récupérer un utilisateur par ID             |
-| PUT     | `/api/user/:id`        | Mettre à jour un utilisateur                |
-| DELETE  | `/api/user/:id`        | Supprimer un utilisateur                    |
-
----
-
-### Ressources
-
-| Méthode | Endpoint                        | Description                                         |
-|---------|---------------------------------|-----------------------------------------------------|
-| POST    | `/api/ressource`                | Créer une ressource                                 |
-| GET     | `/api/ressource`                | Récupérer toutes les ressources                     |
-| GET     | `/api/ressource/:id`            | Récupérer une ressource par ID                      |
-| PUT     | `/api/ressource/:id`            | Mettre à jour une ressource                         |
-| DELETE  | `/api/ressource/:id`            | Supprimer une ressource                             |
-| GET     | `/api/ressource/user/:id`       | Récupérer les ressources créées par un utilisateur  |
-
-#### Favoris Ressources
-
-| Méthode | Endpoint                                 | Description                                         |
-|---------|------------------------------------------|-----------------------------------------------------|
-| GET     | `/api/ressource/favorites/:id`           | Récupérer les ressources favorites d’un utilisateur |
-| POST    | `/api/ressource/favorites`               | Ajouter/retirer une ressource des favoris           |
+### Couverture de tests
+Les tests couvrent :
+- ✅ Création, lecture, mise à jour, suppression (CRUD)
+- ✅ Authentification et autorisation
+- ✅ Validation des données
+- ✅ Gestion des erreurs
+- ✅ Logique métier spécifique
 
 ---
 
-### Exercices
+## 📊 Monitoring et observabilité
 
-| Méthode | Endpoint                                 | Description                                         |
-|---------|------------------------------------------|-----------------------------------------------------|
-| POST    | `/api/exercise`                          | Créer un exercice                                   |
-| GET     | `/api/exercise`                          | Récupérer tous les exercices                        |
-| GET     | `/api/exercise/:id`                      | Récupérer un exercice par ID                        |
-| PUT     | `/api/exercise/:id`                      | Mettre à jour un exercice                           |
-| DELETE  | `/api/exercise/:id`                      | Supprimer un exercice                               |
-| GET     | `/api/exercise/user/:id`                 | Récupérer les exercices d’un utilisateur            |
+### Logs applicatifs
+- **Connexion DB** : Logs de succès/échec
+- **Erreurs serveur** : Logs détaillés pour debugging
+- **Accès API** : Logs des requêtes importantes
+- **Performance** : Temps de réponse des endpoints
 
-#### Historique des exercices
+### Monitoring en production (Heroku)
+```bash
+# Voir les logs en temps réel
+heroku logs --tail --app cesizenbackend
 
-| Méthode | Endpoint                                 | Description                                         |
-|---------|------------------------------------------|-----------------------------------------------------|
-| POST    | `/api/exercise/history`                  | Ajouter un historique d’exercice                    |
-| GET     | `/api/exercise/history/:id_user`         | Récupérer l’historique des exercices d’un utilisateur |
+# Logs des dernières heures
+heroku logs --app cesizenbackend
 
----
+# Métriques de performance
+heroku ps --app cesizenbackend
+```
 
-### Tests & Divers
+### Santé de l'application
+- **Endpoint de santé** : `GET /api/hello`
+- **Test de base de données** : Vérification automatique de la connexion
+- **Alertes Heroku** : Notifications en cas de crash
 
-| Méthode | Endpoint        | Description                                 |
-|---------|----------------|---------------------------------------------|
-| GET     | `/api/hello`   | Test de disponibilité de l’API              |
-| GET     | `/api/test`    | Endpoint de test                            |
-
----
-
-**Remarque** :  
-- Tous les endpoints acceptent et renvoient des données au format JSON.
-- Certains endpoints nécessitent un JWT dans l’en-tête `Authorization`.
-- Pour plus de détails sur les paramètres attendus, voir le code source des contrôleurs.
+### Outils de monitoring externe (optionnels)
+- **Sentry** : Remontée d'erreurs en temps réel
+- **New Relic** : Monitoring de performance
+- **Datadog** : Observabilité complète
 
 ---
 
-## Auteur
+## 🚀 Déploiement
 
-Martin Dubosq – CDA CESI 2025
+### Environnements
+1. **Développement** : Local avec base Azure
+2. **Test** : GitHub Actions avec base Azure
+3. **Production** : Heroku avec base Azure
+
+### Processus de déploiement
+
+#### Déploiement automatique (recommandé)
+1. Créer une branche `feature_*` ou `fix_*`
+2. Développer et tester en local
+3. Push et création d'une Pull Request
+4. Review et validation des checks CI
+5. Merge vers `main` → Déploiement automatique
+
+#### Déploiement manuel (urgence)
+```bash
+# Déploiement direct sur Heroku
+git push heroku main
+
+# Avec une branche spécifique
+git push heroku mybranch:main
+```
+
+### Configuration Heroku
+```bash
+# Configurer les variables d'environnement
+heroku config:set PGHOST=... --app cesizenbackend
+heroku config:set PGUSER=... --app cesizenbackend
+
+# Voir la configuration actuelle
+heroku config --app cesizenbackend
+
+# Redémarrer l'application
+heroku restart --app cesizenbackend
+```
 
 ---
 
-## Licence
+## 🔧 Maintenance et gestion des évolutions
 
-Projet à usage pédagogique – Tous droits réservés.
+### Outils de ticketing
+- **GitHub Issues** : Gestion des bugs et demandes d'évolution
+- **GitHub Projects** : Suivi visuel avec Kanban board
+- **Templates d'issues** : Structure pour les rapports de bugs
+
+### Processus de maintenance
+1. **Création d'une issue** (bug report ou feature request)
+2. **Qualification** : Labels, priorité, assignation
+3. **Développement** : Branche dédiée, développement, tests
+4. **Pull Request** : Review, CI/CD, validation
+5. **Merge et déploiement** : Mise en production
+6. **Clôture** : Validation et fermeture de l'issue
+
+### Gestion des versions
+- **Semantic Versioning** : `major.minor.patch`
+- **Tags Git** : Marquage des releases importantes
+- **Changelog** : Documentation des modifications
+
+---
+
+## 📡 Veille technologique
+
+### Sources d'information automatisées
+- **GitHub Dependabot** : Alertes de sécurité sur les dépendances
+- **Node Weekly** : Newsletter hebdomadaire sur Node.js
+- **PostgreSQL Weekly** : Actualités base de données
+- **OWASP Newsletter** : Alertes de sécurité
+- **Express.js GitHub** : Notifications des releases
+
+### Processus de veille
+1. **Réception automatique** des alertes et newsletters
+2. **Évaluation** de l'impact sur le projet
+3. **Planification** des mises à jour lors des sprints
+4. **Tests** et validation des nouvelles versions
+5. **Documentation** des changements majeurs
+
+---
+
+## 🐛 Troubleshooting
+
+### Problèmes courants
+
+#### Erreur de connexion base de données
+```bash
+# Tester la connexion manuellement
+psql "host=cesizen.postgres.database.azure.com port=5432 dbname=postgres user=admin_cesizen password='P1HJ8{m>e7pC'"
+
+# Vérifier les variables d'environnement
+heroku config --app cesizenbackend
+```
+
+#### Application qui ne démarre pas (R10 Boot timeout)
+```bash
+# Vérifier les logs
+heroku logs --tail --app cesizenbackend
+
+# Problèmes fréquents :
+# - Port mal configuré (doit être process.env.PORT || 3000)
+# - Connexion DB qui échoue
+# - Dépendances manquantes
+```
+
+#### Tests qui échouent
+```bash
+# Exécuter les tests en local
+npm test
+
+# Vérifier la connexion DB pour les tests
+# S'assurer que les variables d'environnement sont définies
+```
+
+### Commandes utiles
+
+```bash
+# Status de l'application Heroku
+heroku ps --app cesizenbackend
+
+# Redémarrer l'application
+heroku restart --app cesizenbackend
+
+# Accéder aux métriques
+heroku logs --app cesizenbackend --dyno web
+
+# Voir la configuration
+heroku config --app cesizenbackend
+
+# Exécuter une commande dans le container
+heroku run bash --app cesizenbackend
+```
+
+---
+
+## 👨‍💻 Contribution
+
+### Workflow de développement
+1. Fork du repository
+2. Création d'une branche `feature_*` ou `fix_*`
+3. Développement et tests en local
+4. Commit avec messages explicites
+5. Push et création d'une Pull Request
+6. Review et merge après validation CI
+
+### Standards de code
+- **ESLint** : Respect des conventions JavaScript
+- **Tests** : Couverture minimale de 80%
+- **Documentation** : Commentaires pour la logique complexe
+- **Commits** : Messages explicites et atomiques
+
+---
+
+## 📞 Support
+
+- **Issues GitHub** : Pour les bugs et demandes d'évolution
+- **Documentation** : Ce README et commentaires du code
+- **Logs** : `heroku logs --app cesizenbackend`
+
+---
+
+## 📄 Licence
+
+Projet à usage pédagogique – CDA CESI 2025  
+Tous droits réservés.
+
+---
+
+## 🏆 Auteur
+
+**Martin Dubosq**  
+Concepteur Développeur d'Applications – CESI 2025  
+📧 dubosq.martin.lgm@gmail.com
