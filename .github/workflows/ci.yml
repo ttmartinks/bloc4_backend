@@ -7,6 +7,8 @@ on:
 jobs:
   branch-name-check:
     runs-on: ubuntu-latest
+    # Ignorer le check pour Dependabot
+    if: github.actor != 'dependabot[bot]'
     steps:
       - name: Check branch name
         uses: lekterable/branchlint-action@2.1.0
@@ -19,32 +21,36 @@ jobs:
 
   db-check:
     runs-on: ubuntu-latest
-    needs: branch-name-check
-    steps:
-      - name: Vérifier la connexion à la base de données
-        run: |
-          export PGPASSWORD="${{ secrets.PGPASSWORD }}"
-          until pg_isready -h ${{ secrets.PGHOST }} -p ${{ secrets.PGPORT }} -U ${{ secrets.PGUSER }} -d ${{ secrets.PGDATABASE }}; do
-            echo "En attente de la base de données..."
-            sleep 2
-          done
-        shell: bash
-
-  test:
-    runs-on: ubuntu-latest
-    needs: db-check
     steps:
       - uses: actions/checkout@v3
-
       - name: Setup Node.js
         uses: actions/setup-node@v3
         with:
           node-version: '18'
-
       - name: Install dependencies
         run: npm ci
+      - name: Test database connection
+        run: npm run test -- userQueries.test.js
+        env:
+          PGHOST: ${{ secrets.PGHOST }}
+          PGUSER: ${{ secrets.PGUSER }}
+          PGPORT: ${{ secrets.PGPORT }}
+          PGDATABASE: ${{ secrets.PGDATABASE }}
+          PGPASSWORD: ${{ secrets.PGPASSWORD }}
 
-      - name: Run Jest tests
+  test:
+    runs-on: ubuntu-latest
+    # Dependabot peut passer les tests
+    needs: [db-check]
+    steps:
+      - uses: actions/checkout@v3
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18'
+      - name: Install dependencies
+        run: npm ci
+      - name: Run tests
         run: npm test
         env:
           PGHOST: ${{ secrets.PGHOST }}
@@ -52,26 +58,17 @@ jobs:
           PGPORT: ${{ secrets.PGPORT }}
           PGDATABASE: ${{ secrets.PGDATABASE }}
           PGPASSWORD: ${{ secrets.PGPASSWORD }}
-          PORT: ${{ secrets.PORT }}
-          SHA256_SALT: ${{ secrets.SHA256_SALT }}
-          JWT_SECRET: ${{ secrets.JWT_SECRET }}
-          JWT_EXPIRES_IN: ${{ secrets.JWT_EXPIRES_IN }}
 
   sonar:
     runs-on: ubuntu-latest
+    # Dependabot peut passer SonarQube
+    needs: test
     steps:
       - uses: actions/checkout@v3
-
-      - name: Setup Node.js
-        uses: actions/setup-node@v3
         with:
-          node-version: '18'
-
-      - name: Install dependencies
-        run: npm ci
-
+          fetch-depth: 0
       - name: SonarQube Scan
-        uses: sonarsource/sonarqube-scan-action@master
+        uses: sonarqube-quality-gate-action@master
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_API_KEY }}
           SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
