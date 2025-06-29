@@ -1,0 +1,31 @@
+version: 2
+updates:
+  # Configuration pour les dépendances npm (package.json)
+  - package-ecosystem: "npm"
+    directory: "/"
+    schedule:
+      interval: "daily"  # ❌ Tu avais écrit "dayly" au lieu de "daily"
+      time: "09:00"
+    open-pull-requests-limit: 10
+    reviewers:
+      - "ttmartinks"  # Ton username GitHub
+    assignees:
+      - "ttmartinks"
+    commit-message:
+      prefix: "chore"
+      include: "scope"
+    labels:
+      - "dependencies"
+      - "security"
+
+  # Configuration pour GitHub Actions (.github/workflows/*.yml)
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "monthly"
+    open-pull-requests-limit: 5
+    reviewers:
+      - "ttmartinks"
+    labels:
+      - "github-actions"
+      - "dependencies"
