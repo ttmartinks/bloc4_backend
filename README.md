@@ -91,14 +91,14 @@ npm run dev        # Mode développement avec auto-reload (à configurer)
 ### Variables requises dans `.env`
 ```env
 # Base de données PostgreSQL
-PGHOST=cesizen.postgres.database.azure.com
-PGUSER=admin_cesizen
-PGPORT=5432
-PGDATABASE=postgres
-PGPASSWORD=your_password
+PGHOST=XXXX
+PGUSER=XXXX
+PGPORT=XXXX
+PGDATABASE=XXXX
+PGPASSWORD=XXXX
 
 # Serveur
-PORT=3000
+PORT=XXXX
 
 # Sécurité
 SHA256_SALT=your_random_salt
@@ -419,7 +419,7 @@ heroku restart --app cesizenbackend
 #### Erreur de connexion base de données
 ```bash
 # Tester la connexion manuellement
-psql "host=cesizen.postgres.database.azure.com port=5432 dbname=postgres user=admin_cesizen password='P1HJ8{m>e7pC'"
+psql "host=cesizen.postgres.database.azure.com port=XXXX dbname=XXXX user=XXXX password='XXXX"
 
 # Vérifier les variables d'environnement
 heroku config --app cesizenbackend
