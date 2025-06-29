@@ -11,8 +11,8 @@ jobs:
     if: github.actor != 'dependabot[bot]'
     steps:
       - name: Check branch name
-        uses: lekterable/branchlint-action@2.1.0
-        with:
+        uses: deepakputhraya/action-branch-name@master
+         with:
           allowed: |
             /^feature_[a-zA-Z0-9_\-]+$/
             /^fix_[a-zA-Z0-9_\-]+$/
