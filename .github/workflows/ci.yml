@@ -10,14 +10,13 @@ jobs:
     # Ignorer le check pour Dependabot
     if: github.actor != 'dependabot[bot]'
     steps:
+      - uses: actions/checkout@v3
       - name: Check branch name
         uses: deepakputhraya/action-branch-name@master
-         with:
-          allowed: |
-            /^feature_[a-zA-Z0-9_\-]+$/
-            /^fix_[a-zA-Z0-9_\-]+$/
-            main
-          errorMessage: "❌ Le nom de la branche doit commencer par 'feature_' ou 'fix_' (ex: feature_login, fix_bug123)."
+        with:
+          regex: '^(feature_|fix_)[a-zA-Z0-9_\-]+$'
+          allowed_prefixes: 'feature_,fix_'
+          ignore: main,develop
 
   db-check:
     runs-on: ubuntu-latest
@@ -32,15 +31,10 @@ jobs:
       - name: Test database connection
         run: npm run test -- userQueries.test.js
         env:
-          PGHOST: ${{ secrets.PGHOST }}
-          PGUSER: ${{ secrets.PGUSER }}
-          PGPORT: ${{ secrets.PGPORT }}
-          PGDATABASE: ${{ secrets.PGDATABASE }}
-          PGPASSWORD: ${{ secrets.PGPASSWORD }}
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
 
   test:
     runs-on: ubuntu-latest
-    # Dependabot peut passer les tests
     needs: [db-check]
     steps:
       - uses: actions/checkout@v3
@@ -53,15 +47,10 @@ jobs:
       - name: Run tests
         run: npm test
         env:
-          PGHOST: ${{ secrets.PGHOST }}
-          PGUSER: ${{ secrets.PGUSER }}
-          PGPORT: ${{ secrets.PGPORT }}
-          PGDATABASE: ${{ secrets.PGDATABASE }}
-          PGPASSWORD: ${{ secrets.PGPASSWORD }}
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
 
   sonar:
     runs-on: ubuntu-latest
-    # Dependabot peut passer SonarQube
     needs: test
     steps:
       - uses: actions/checkout@v3
@@ -70,5 +59,5 @@ jobs:
       - name: SonarQube Scan
         uses: sonarqube-quality-gate-action@master
         env:
-          SONAR_TOKEN: ${{ secrets.SONAR_API_KEY }}
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
           SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
