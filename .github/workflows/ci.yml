@@ -10,13 +10,19 @@ jobs:
     # Ignorer le check pour Dependabot
     if: github.actor != 'dependabot[bot]'
     steps:
-      - uses: actions/checkout@v3
       - name: Check branch name
-        uses: deepakputhraya/action-branch-name@master
-        with:
-          regex: '^(feature_|fix_)[a-zA-Z0-9_\-]+$'
-          allowed_prefixes: 'feature_,fix_'
-          ignore: main,develop
+        run: |
+          BRANCH_NAME="${{ github.head_ref }}"
+          echo "🔍 Vérification de la branche: $BRANCH_NAME"
+          
+          if [[ "$BRANCH_NAME" =~ ^(feature_|fix_)[a-zA-Z0-9_\-]+$ ]]; then
+            echo "✅ Nom de branche valide: $BRANCH_NAME"
+          else
+            echo "❌ Le nom de la branche doit commencer par 'feature_' ou 'fix_'"
+            echo "📝 Format attendu: feature_nom_de_la_fonctionnalite ou fix_nom_du_bug"
+            echo "🔗 Branche actuelle: $BRANCH_NAME"
+            exit 1
+          fi
 
   db-check:
     runs-on: ubuntu-latest
