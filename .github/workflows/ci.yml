@@ -11,18 +11,23 @@ jobs:
     if: github.actor != 'dependabot[bot]'
     steps:
       - name: Check branch name
-        uses: lekterable/branchlint-action@2.1.0
-        with:
-          allowed: |
-            /^feature_[a-zA-Z0-9_\-]+$/
-            /^fix_[a-zA-Z0-9_\-]+$/
-            main
-          errorMessage: "❌ Le nom de la branche doit commencer par 'feature_' ou 'fix_' (ex: feature_login, fix_bug123)."
+        run: |
+          BRANCH_NAME="${{ github.head_ref }}"
+          echo "🔍 Vérification de la branche: $BRANCH_NAME"
+          
+          if [[ "$BRANCH_NAME" =~ ^(feature_|fix_)[a-zA-Z0-9_\-]+$ ]]; then
+            echo "✅ Nom de branche valide: $BRANCH_NAME"
+          else
+            echo "❌ Le nom de la branche doit commencer par 'feature_' ou 'fix_'"
+            echo "📝 Format attendu: feature_nom_de_la_fonctionnalite ou fix_nom_du_bug"
+            echo "🔗 Branche actuelle: $BRANCH_NAME"
+            exit 1
+          fi
 
   db-check:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - name: Setup Node.js
         uses: actions/setup-node@v3
         with:
@@ -32,18 +37,13 @@ jobs:
       - name: Test database connection
         run: npm run test -- userQueries.test.js
         env:
-          PGHOST: ${{ secrets.PGHOST }}
-          PGUSER: ${{ secrets.PGUSER }}
-          PGPORT: ${{ secrets.PGPORT }}
-          PGDATABASE: ${{ secrets.PGDATABASE }}
-          PGPASSWORD: ${{ secrets.PGPASSWORD }}
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
 
   test:
     runs-on: ubuntu-latest
-    # Dependabot peut passer les tests
     needs: [db-check]
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - name: Setup Node.js
         uses: actions/setup-node@v3
         with:
@@ -53,22 +53,17 @@ jobs:
       - name: Run tests
         run: npm test
         env:
-          PGHOST: ${{ secrets.PGHOST }}
-          PGUSER: ${{ secrets.PGUSER }}
-          PGPORT: ${{ secrets.PGPORT }}
-          PGDATABASE: ${{ secrets.PGDATABASE }}
-          PGPASSWORD: ${{ secrets.PGPASSWORD }}
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
 
   sonar:
     runs-on: ubuntu-latest
-    # Dependabot peut passer SonarQube
     needs: test
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
         with:
           fetch-depth: 0
       - name: SonarQube Scan
         uses: sonarqube-quality-gate-action@master
         env:
-          SONAR_TOKEN: ${{ secrets.SONAR_API_KEY }}
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
           SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
