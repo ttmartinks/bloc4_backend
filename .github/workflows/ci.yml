@@ -17,10 +17,8 @@ jobs:
           BRANCH_NAME="${{ github.head_ref }}"
           
           # Vérifier si la branche correspond aux patterns autorisés
-          if [[ "$BRANCH_NAME" =~ ^feat/[a-zA-Z0-9_-]+$ ]] || \
-             [[ "$BRANCH_NAME" =~ ^fix/[a-zA-Z0-9_-]+$ ]] || \
-             [[ "$BRANCH_NAME" =~ ^docs/[a-zA-Z0-9_-]+$ ]] || \
-             [[ "$BRANCH_NAME" =~ ^test/[a-zA-Z0-9_-]+$ ]] || \
+          if [[ "$BRANCH_NAME" =~ ^feat_[a-zA-Z0-9_-]+$ ]] || \
+             [[ "$BRANCH_NAME" =~ ^fix_[a-zA-Z0-9_-]+$ ]] || \
              [[ "$BRANCH_NAME" == "dev" ]] || \
              [[ "$BRANCH_NAME" == "main" ]]; then
             echo "✅ Nom de branche valide: $BRANCH_NAME"
