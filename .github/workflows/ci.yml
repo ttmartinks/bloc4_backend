@@ -121,7 +121,7 @@ jobs:
           npm ci
           npm test -- --coverage --watchAll=false
       - name: SonarQube Scan
-        uses: sonarqube-quality-gate-action@1.2.0
+        uses: sonarsource/sonarqube-quality-gate-action@master
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}  # Nom standard
           SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
