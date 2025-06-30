@@ -2,7 +2,6 @@ name: CI
 
 on:
   pull_request:
-    branches: [ dev ]  # Changé pour dev selon votre README
 
 jobs:
   branch-name-check:
@@ -122,7 +121,7 @@ jobs:
           npm ci
           npm test -- --coverage --watchAll=false
       - name: SonarQube Scan
-        uses: sonarqube-quality-gate-action@master
+        uses: sonarqube-quality-gate-action@1.2.0
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}  # Nom standard
           SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
