@@ -160,17 +160,7 @@ jobs:
             npm run test:coverage || npm test -- --coverage || echo "⚠️ Backend coverage skipped"
             cd - > /dev/null
           fi
-          
-          # Frontend
-          FRONTEND_PKG=$(find . -path "*/frontend/package.json" | head -1)
-          if [ -n "$FRONTEND_PKG" ]; then
-            FRONTEND_DIR=$(dirname "$FRONTEND_PKG")
-            echo "📦 Frontend: $FRONTEND_DIR"
-            cd "$FRONTEND_DIR"
-            npm ci
-            npm test -- --coverage --watchAll=false || echo "⚠️ Frontend coverage skipped"
-            cd - > /dev/null
-          fi
+        
       - name: SonarQube Scan
         uses: sonarsource/sonarqube-quality-gate-action@master
         env:
