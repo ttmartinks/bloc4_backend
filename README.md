@@ -6,7 +6,6 @@ CESIZen est une plateforme de gestion du stress et de sensibilisation à la sant
 
 ---
 
-
 ## 📚 Table des matières
 
 - [Architecture](#architecture)
