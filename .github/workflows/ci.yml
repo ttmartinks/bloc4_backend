@@ -40,20 +40,6 @@ jobs:
         with:
           node-version: '18'
           cache: 'npm'
-      - name: Find and install dependencies
-        run: |
-          echo "🔍 Recherche des fichiers package.json..."
-          BACKEND_PKG=$(find . -path "*/backend/package.json" -o -path "./package.json" | head -1)
-          
-          if [ -n "$BACKEND_PKG" ]; then
-            BACKEND_DIR=$(dirname "$BACKEND_PKG")
-            echo "📦 Package.json trouvé dans: $BACKEND_DIR"
-            cd "$BACKEND_DIR"
-            npm ci
-          else
-            echo "❌ Aucun package.json trouvé"
-            exit 1
-          fi
       - name: Test database connection
         run: |
           BACKEND_PKG=$(find . -path "*/backend/package.json" -o -path "./package.json" | head -1)
