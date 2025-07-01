@@ -28,16 +28,6 @@ jobs:
             echo "📋 Formats autorisés :"
             echo "• feat/nom-fonctionnalite"
             echo "• fix/nom-correction"
-            echo "• docs/nom-documentation"
-            echo "• test/nom-test"
-            echo "• dev"
-            echo "• main"
-            echo ""
-            echo "❌ Exemples valides :"
-            echo "• feat/login-system"
-            echo "• fix/auth-bug"
-            echo "• docs/readme-update"
-            echo "• test/user-validation"
             exit 1
           fi
   db-check:
